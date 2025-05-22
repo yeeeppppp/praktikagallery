@@ -1,0 +1,11 @@
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\ArtGalleryStore.csproj.AssemblyReference.cache
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\MainWindow.g.cs
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\Views\AdminPanelView.g.cs
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\Views\AuthView.g.cs
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\Views\CartView.g.cs
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\Views\ProductsView.g.cs
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\Views\UserProfileView.g.cs
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\App.g.cs
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\ArtGalleryStore_MarkupCompile.cache
+C:\Users\gulsl\Desktop\ArtGalleryStore\ArtGalleryStore\obj\Debug\net6.0-windows\ArtGalleryStore_MarkupCompile.lref

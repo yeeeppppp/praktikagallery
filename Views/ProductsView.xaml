@@ -1,0 +1,310 @@
+<UserControl x:Class="ArtGalleryStore.Views.ProductsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ArtGalleryStore.Views"
+             xmlns:vm="clr-namespace:ArtGalleryStore.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Верхняя панель фильтров и поиска -->
+        <Border Grid.Row="0" Background="White" Padding="20" Margin="0,0,0,10" 
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Фильтры и поиск -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <!-- Поиск -->
+                    <StackPanel Orientation="Vertical" Width="250" Margin="0,0,20,0">
+                        <TextBlock Text="Поиск" Margin="0,0,0,5"/>
+                        <TextBox Style="{StaticResource DefaultTextBoxStyle}" 
+                                 Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    
+                    <!-- Фильтр по технике -->
+                    <StackPanel Orientation="Vertical" Width="150" Margin="0,0,20,0">
+                        <TextBlock Text="Техника" Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding AvailableMediums}" 
+                                  SelectedItem="{Binding SelectedMedium}" 
+                                  Padding="8" Height="36">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    
+                    <!-- Фильтр по цене (от) -->
+                    <StackPanel Orientation="Vertical" Width="120" Margin="0,0,10,0">
+                        <TextBlock Text="Цена от" Margin="0,0,0,5"/>
+                        <TextBox Style="{StaticResource DefaultTextBoxStyle}" 
+                                 Text="{Binding MinPrice, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    
+                    <!-- Фильтр по цене (до) -->
+                    <StackPanel Orientation="Vertical" Width="120" Margin="0,0,20,0">
+                        <TextBlock Text="до" Margin="0,0,0,5"/>
+                        <TextBox Style="{StaticResource DefaultTextBoxStyle}" 
+                                 Text="{Binding MaxPrice, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    
+                    <!-- Только в наличии -->
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+                        <CheckBox Content="Только в наличии" IsChecked="{Binding InStockOnly}" 
+                                  VerticalAlignment="Center" Margin="0,0,0,10"/>
+                    </StackPanel>
+                </StackPanel>
+                
+                <!-- Сброс фильтров -->
+                <Button Grid.Column="1" Content="Сбросить фильтры" 
+                        Command="{Binding ResetFiltersCommand}"
+                        Style="{StaticResource OutlineButtonStyle}"
+                        Margin="10,0,0,0"/>
+            </Grid>
+        </Border>
+        
+        <!-- Основная область с товарами -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Заголовок раздела и сортировка -->
+            <Grid Grid.Row="0" Margin="20,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" Text="Галерея картин" Style="{StaticResource HeaderTextStyle}"/>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="Сортировка:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ComboBox ItemsSource="{Binding SortOptions}" 
+                              SelectedItem="{Binding SortOption}" 
+                              Width="200" Padding="8" Height="32">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+            
+            <!-- Сетка товаров -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="10,0">
+                <Grid>
+                    <!-- Индикатор загрузки -->
+                    <ProgressBar IsIndeterminate="True" Height="10" VerticalAlignment="Top" 
+                                Visibility="{Binding LoadingVisibility}"/>
+                    
+                    <!-- Панель с сообщениями -->
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0">
+                        <!-- Сообщение об ошибке -->
+                        <Border Background="#F8F8F8" BorderBrush="{StaticResource BorderBrush}" 
+                               BorderThickness="1" CornerRadius="5" Padding="15,10"
+                               Visibility="{Binding ErrorMessageVisibility}" Margin="0,0,0,5">
+                            <TextBlock Text="{Binding ErrorMessage}" 
+                                      Foreground="{StaticResource AccentBrush}" 
+                                      TextWrapping="Wrap" TextAlignment="Center"/>
+                        </Border>
+                        
+                        <!-- Сообщение об успешном действии -->
+                        <Border Background="#F0FFF0" BorderBrush="#4CAF50" 
+                               BorderThickness="1" CornerRadius="5" Padding="15,10" Margin="0,15,0,15"
+                               Visibility="{Binding SuccessMessageVisibility}"
+                               MaxWidth="400">
+                            <TextBlock Text="{Binding SuccessMessage}" 
+                                      Foreground="#006400" 
+                                      TextWrapping="Wrap" 
+                                      TextAlignment="Left"
+                                      FontFamily="Segoe UI"/>
+                        </Border>
+                    </StackPanel>
+                    
+                    <!-- Сообщение о пустом результате -->
+                    <TextBlock Text="По вашему запросу ничего не найдено. Попробуйте изменить параметры поиска." 
+                              Foreground="{StaticResource TextBrush}" 
+                              TextWrapping="Wrap" Margin="20"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Visibility="{Binding NoProductsVisibility}"/>
+                    
+                    <!-- Товары -->
+                    <ItemsControl ItemsSource="{Binding Products}" Margin="10">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource ProductCardStyle}" Width="300" Height="400">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="200"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <!-- Изображение картины -->
+                                        <Image Grid.Row="0" Source="{Binding ImageUrl}" Stretch="UniformToFill"/>
+                                        
+                                        <!-- Информация о товаре -->
+                                        <StackPanel Grid.Row="1" Margin="15,10">
+                                            <TextBlock Text="{Binding Title}" Style="{StaticResource ProductTitleStyle}"/>
+                                            <TextBlock Text="{Binding Artist}" Margin="0,5,0,0"/>
+                                            <TextBlock Text="{Binding Medium}" Margin="0,5,0,0" Foreground="#666"/>
+                                            <TextBlock Text="{Binding Size}" Margin="0,5,0,0" Foreground="#666"/>
+                                            <TextBlock Text="{Binding Price, StringFormat={}{0:N0} ₽}" 
+                                                     Style="{StaticResource ProductPriceStyle}" Margin="0,10,0,0"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Кнопки управления -->
+                                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="15,0,15,15">
+                                            <Button Content="В корзину" 
+                                                    Command="{Binding DataContext.AddToCartCommand, 
+                                                              RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource DefaultButtonStyle}"
+                                                    Padding="10,5" Margin="0,0,10,0"
+                                                    IsEnabled="{Binding InStock}"/>
+                                            
+                                            <Button Content="Подробнее" 
+                                                    Command="{Binding DataContext.ViewProductDetailsCommand, 
+                                                              RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource OutlineButtonStyle}"
+                                                    Padding="10,5"/>
+                                                    
+                                            <!-- Диагностическая кнопка - будет добавлять товар напрямую -->
+                                            <Button Content="Тест!" 
+                                                    Click="TestAddToCart_Click"
+                                                    Tag="{Binding Id}"
+                                                    Background="Orange"
+                                                    Foreground="White"
+                                                    Margin="5,0,0,0"
+                                                    Padding="5,2"
+                                                    ToolTip="Тестовое добавление в корзину напрямую"
+                                                    IsEnabled="{Binding InStock}"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Плашка "Нет в наличии" -->
+                                        <Border Grid.Row="0" Grid.RowSpan="3" Background="#88000000"
+                                               Visibility="{Binding InStock, Converter={StaticResource InverseBooleanToVisibilityConverter}, ConverterParameter=True}">
+                                            <TextBlock Text="НЕТ В НАЛИЧИИ" Foreground="White" FontWeight="Bold" 
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+        
+        <!-- Детальная информация о продукте (при выборе) -->
+        <Border Grid.RowSpan="2" Background="#80000000" 
+                Visibility="{Binding ProductDetailsVisibility}"
+                Panel.ZIndex="1000">
+            <Border Background="White" MaxWidth="800" MaxHeight="600" CornerRadius="10">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Заголовок и крестик закрытия -->
+                    <Grid Grid.Row="0">
+                        <TextBlock Text="{Binding SelectedProduct.Title}" Style="{StaticResource HeaderTextStyle}"/>
+                        <Button Content="✕" HorizontalAlignment="Right" 
+                                Command="{Binding CloseProductDetailsCommand}"
+                                Style="{StaticResource OutlineButtonStyle}"
+                                Padding="8,2" FontSize="14"/>
+                    </Grid>
+                    
+                    <!-- Информация о товаре -->
+                    <Grid Grid.Row="1" Margin="0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Изображение картины -->
+                        <Image Grid.Column="0" Source="{Binding SelectedProduct.ImageUrl}" 
+                               Stretch="Uniform" MaxHeight="300" MaxWidth="300" Margin="0,0,20,0"/>
+                        
+                        <!-- Детальная информация -->
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding SelectedProduct.Artist}" FontWeight="SemiBold" FontSize="18" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding SelectedProduct.Description}" TextWrapping="Wrap" Margin="0,0,0,15"/>
+                            
+                            <Grid Margin="0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Техника:" FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedProduct.Medium}" Margin="0,5,0,5"/>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Размер:" FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedProduct.Size}" Margin="0,5,0,5"/>
+                                
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Год создания:" FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedProduct.Year}" Margin="0,5,0,5"/>
+                                
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Наличие:" FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" 
+                                           Text="{Binding SelectedProduct.InStock, StringFormat='В наличии', TargetNullValue='Нет в наличии'}" 
+                                           Foreground="{StaticResource SecondaryBrush}"
+                                           Margin="0,5,0,5"/>
+                            </Grid>
+                            
+                            <TextBlock Text="{Binding SelectedProduct.Price, StringFormat={}{0:N0} ₽}" 
+                                       Style="{StaticResource ProductPriceStyle}" Margin="0,15,0,0" FontSize="24"/>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- Кнопки управления -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="В корзину" 
+                                Command="{Binding AddToCartCommand}"
+                                CommandParameter="{Binding SelectedProduct}"
+                                Style="{StaticResource DefaultButtonStyle}"
+                                Padding="15,8" Margin="0,0,10,0"
+                                Visibility="{Binding AddToCartButtonVisibility}"
+                                IsEnabled="{Binding SelectedProduct.InStock}"/>
+                        
+                        <Button Content="Закрыть" 
+                                Command="{Binding CloseProductDetailsCommand}"
+                                Style="{StaticResource OutlineButtonStyle}"
+                                Padding="15,8"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

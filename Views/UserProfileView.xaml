@@ -1,0 +1,128 @@
+<UserControl x:Class="ArtGalleryStore.Views.UserProfileView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ArtGalleryStore.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    
+    <Grid Background="{StaticResource LightBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Заголовок -->
+        <TextBlock Grid.Row="0" Text="Профиль пользователя" Style="{StaticResource HeaderTextStyle}" Margin="30,20,30,10"/>
+        
+        <!-- Содержимое профиля с прокруткой -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid Margin="30,0,30,30">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Информация о пользователе и смена пароля -->
+            <Border Grid.Column="0" Background="White" CornerRadius="5" Margin="0,0,15,0"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <StackPanel Margin="20">
+                    <TextBlock Text="Информация об аккаунте" Style="{StaticResource SubHeaderTextStyle}"/>
+                    
+                    <Grid Margin="0,20,0,30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Имя:" FontWeight="SemiBold" Margin="0,5,10,5"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Name}" Margin="0,5,0,5"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Логин:" FontWeight="SemiBold" Margin="0,5,10,5"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Username}" Margin="0,5,0,5"/>
+                        
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Email:" FontWeight="SemiBold" Margin="0,5,10,5"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Email}" Margin="0,5,0,5"/>
+                        
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Дата регистрации:" FontWeight="SemiBold" Margin="0,5,10,5"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CreatedAt, StringFormat=dd.MM.yyyy}" Margin="0,5,0,5"/>
+                    </Grid>
+                    
+                    <!-- Форма смены пароля -->
+                    <TextBlock Text="Изменить пароль" Style="{StaticResource SubHeaderTextStyle}" Margin="0,10,0,15"/>
+                    
+                    <TextBlock Text="Новый пароль" Margin="0,0,0,5"/>
+                    <PasswordBox x:Name="NewPasswordBox" Style="{StaticResource DefaultPasswordBoxStyle}" Margin="0,0,0,15"/>
+                    
+                    <TextBlock Text="Подтвердите пароль" Margin="0,0,0,5"/>
+                    <PasswordBox x:Name="ConfirmPasswordBox" Style="{StaticResource DefaultPasswordBoxStyle}" Margin="0,0,0,20"/>
+                    
+                    <!-- Сообщения -->
+                    <TextBlock Text="{Binding ErrorMessage}" 
+                               Foreground="{StaticResource AccentBrush}" 
+                               TextWrapping="Wrap"
+                               Visibility="{Binding ErrorMessageVisibility}"
+                               Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="{Binding SuccessMessage}" 
+                               Foreground="{StaticResource SecondaryBrush}" 
+                               TextWrapping="Wrap"
+                               Visibility="{Binding SuccessMessageVisibility}"
+                               Margin="0,0,0,10"/>
+                    
+                    <!-- Кнопки -->
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Обновить профиль" 
+                                Command="{Binding UpdateProfileCommand}" 
+                                Style="{StaticResource DefaultButtonStyle}" 
+                                Padding="15,8" Margin="0,0,10,0"/>
+                        
+                        <Button Content="Выйти из аккаунта" 
+                                Command="{Binding LogoutCommand}" 
+                                Style="{StaticResource AccentButtonStyle}" 
+                                Padding="15,8"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            
+            <!-- История заказов (заглушка) -->
+            <Border Grid.Column="1" Background="White" CornerRadius="5" Margin="15,0,0,0"
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                <DockPanel Margin="20">
+                    <TextBlock DockPanel.Dock="Top" Text="История заказов" Style="{StaticResource SubHeaderTextStyle}" Margin="0,0,0,20"/>
+                    
+                    <!-- Заглушка - нет заказов -->
+                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" 
+                            CornerRadius="5" Padding="20" VerticalAlignment="Center">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="У вас пока нет заказов" 
+                                       FontWeight="SemiBold" 
+                                       HorizontalAlignment="Center" 
+                                       Margin="0,0,0,10"/>
+                            
+                            <TextBlock Text="Ваши заказы будут отображаться здесь после их оформления" 
+                                       TextWrapping="Wrap" 
+                                       TextAlignment="Center" 
+                                       Foreground="{StaticResource LightTextBrush}"/>
+                            
+                            <Button Content="Перейти в каталог" 
+                                    Command="{Binding DataContext.NavigateToProductsCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                    Style="{StaticResource DefaultButtonStyle}" 
+                                    Padding="15,8" 
+                                    Margin="0,20,0,0" 
+                                    HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </DockPanel>
+            </Border>
+        </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
